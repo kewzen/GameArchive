@@ -10,7 +10,7 @@ db = DataBase()
 # Инициализация библиотеки colorama
 init(autoreset=True)
 
-class search:
+class Search:
 # Поиск игры в бд по имени
     async def search_by_name():
         await db.init()

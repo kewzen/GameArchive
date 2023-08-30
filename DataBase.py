@@ -5,8 +5,6 @@ from asyncio import run
 init(autoreset=True)
 # Методы базы данных
 class DataBase:
-    # Только создание параметров кусора и коннекта 
-    # Есть функция init т.к в __init__ нельзя вернуть корутину
     def __init__(self):
         self.conn = None
         self.cursor = None

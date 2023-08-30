@@ -13,14 +13,16 @@ init(autoreset=True)
 
 # Определение вызова классов чтоб не прописывать аргумент self
 db = DataBase()
-
+# Тоже самое чтобы не прописывать self
 commands = Commands()
 
 
 # Главное меню
 async def menu():
+    # Очистка консоли
     os.system("clear")
     await db.init() # - без этой функции не вызывается курсор и коннект с бд,простая инициализация
+    # Вывод пунктом меню для пользователя
     print(Fore.YELLOW + """
     Выберите действие:
     [1] Список игр
@@ -63,6 +65,7 @@ async def menu():
         case _:
             print(Fore.RED + "Произошлка ошибка! Нажмите ENTER чтоб вернуться назад") 
             input("")
+            # Рестарт скрипта
             python = sys.executable
             os.execl(python, python, * sys.argv)
 # Старт скрипта

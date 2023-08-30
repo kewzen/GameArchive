@@ -4,7 +4,7 @@ from colorama import init, Fore
 from os import system, execl
 import sys
 from collections.abc import Coroutine
-from search import search
+from search import Search as search
 
 
 # Инициализация библиотеки colorama 
@@ -26,42 +26,54 @@ class Commands:
         author = input(Fore.YELLOW + "Введите издателя игры: ")
         try:
             year = int(input(Fore.YELLOW + "Введите год издания игры: "))
+            # Вывод результата
             print(Fore.LIGHTYELLOW_EX + "Игра добавлена!\n" + Fore.YELLOW + f"Название: {title}\nИздатель: {author}\nГод издания: {year}")
+            # Добавление в базу 
             await db.add_games(title,author,year)
+            # Ожидание пока юзер нажмет на ентер
             print(Fore.LIGHTYELLOW_EX +"Чтобы вернуться назад нажмите ENTER!")
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv) 
         # Если введено не число
         except:
             print(Fore.RED + "Введите правильный год издания! Нажмите ENTER чтоб вернуться назад") 
             input("")
+            # Рестарт скpипта
             python = sys.executable
             execl(python, python, * sys.argv)
     # Список игр
     async def list_of_games(self):
-        system("clear")
-        await db.init()
+        system("clear") # Очистка консоли
+        await db.init() # Создание курсора и коннекта
         counter = 1 # Счетчик для вывода игр
         games = await db.all_games()
         # Проверка есть ли вообще игры в базе
         if len(games) == 0:
+            # Ожидание ентера
             print(Fore.RED + "Вы еще не добавили ни одной игры! Чтобы вернуться назад нажмите ENTER")
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv)
+        # Вывод игр
         for i in games:
             print(Fore.YELLOW + f"{str(counter)}.\nНазвание: {i[0]}\nИздатель: {i[1]}\nГод издания: {i[2]}")
             counter = counter + 1
         print(Fore.LIGHTMAGENTA_EX + f"Всего игр в базе:{len(games)}")
+        # Ожидание игр
         print(Fore.LIGHTYELLOW_EX +"Чтобы вернуться назад нажмите ENTER!")
         input("")
+        # Рестарт скрипта
         python = sys.executable
         execl(python, python, * sys.argv) 
      # Поиск игр
     async def search_game(self):
-        system("clear")
-        await db.init()
+        
+        system("clear") # Очистка консоли
+        await db.init()    # Создание курсора и коннекта
+        # Вывод юзеру пунктов выбора
         print(Fore.YELLOW + """
     Выберите критерии поиска:
     [1] Поиск по названию
@@ -91,14 +103,16 @@ class Commands:
                 execl(python, python, * sys.argv)
             # Если не сработал не один случай
             case _:
+                # Ожидание ентер
                 print(Fore.RED + "Произошлка ошибка! Нажмите ENTER чтоб вернуться назад") 
                 input("")
+                # Рестарт скрипта
                 python = sys.executable
                 execl(python, python, * sys.argv)
     # Удаление игр
     async def delete_game(self):
-        await db.init()
-        system("clear")
+        await db.init() # Создание курсора
+        system("clear") # Очиста консоли
         # Входные данные
         title = str(input(Fore.YELLOW +"Введите название игры для удаления: "))
         author = str(input(Fore.YELLOW + "Введите издателя игры для удаления: "))
@@ -106,28 +120,36 @@ class Commands:
             year = int(input(Fore.YELLOW + "Введите год издания игры для поиска: "))
         # Если введенно не число
         except:
+            # Ожидание ентер
             print(Fore.RED + "Введите правильный год издания! Нажмите ENTER чтоб вернуться назад") 
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv)
+        # Получение игры из бд
         games = await db.search_by_all(title,author,year)
         # Проверка есть ли игра на удаление
         if len(games) > 0: 
+            # Метод удаления игры
             await db.delete_game(title,author,year)
             print (Fore.YELLOW + f"Игра {title} удалена!")
+            # Ожидание ентер
             print(Fore.LIGHTYELLOW_EX +"Чтобы вернуться назад нажмите ENTER!")
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv) 
         else:
+            # Ожидание ентер
             print(Fore.RED +"Игра не найдена,чтобы вернуться назад нажмите ENTER!")
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv)
 # Редактирование игр
     async def edit_game(self):
-        await db.init()
-        system("clear")
+        await db.init() # Создание курсора и коннекта
+        system("clear") # Очистка консоли
         # Входные данные для поиска игры которую редактируем
         title = str(input(Fore.YELLOW +"Введите название игры для редактирования: "))
         author = str(input(Fore.YELLOW + "Введите издателя игры для редактирования: "))
@@ -135,22 +157,27 @@ class Commands:
             year = int(input(Fore.YELLOW + "Введите год издания игры для редактирования: "))
         # Если введенно не число
         except:
+            # Ожидание ентер
             print(Fore.RED + "Введите правильный год издания! Нажмите ENTER чтоб вернуться назад") 
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv)
         # Ищем игру для проверки есть ли она в базе
         games = await db.search_by_all(title,author,year)
         # Если все таки игра есть
         if len(games) > 0: 
+            # Вывод игры которую редачим
             print(Fore.YELLOW + f"""
         Название: {games[0][0]}
         Издатель: {games[0][1]}
         Год издания:{games[0][2]}
                   """)
+            # Ожидание ентер
             print(Fore.LIGHTYELLOW_EX +"Чтобы перейти к редактированию игры нажмите ENTER!")
             input("")
-            system("clear") 
+            system("clear") # Очистка консоли
+            # Вывод параметров для редактирования
             print (Fore.YELLOW + f"""
         Выберите параметр для редактирования:
         [1] Название 
@@ -159,7 +186,7 @@ class Commands:
                    """)
             # Выбор пользователя параметра для изменения
             choose_of_edit = int(input(""))
-            system("clear")
+            system("clear") # Очистка консоли
             match choose_of_edit:
             # Изменить название
                 case 1:
@@ -192,7 +219,9 @@ class Commands:
             execl(python, python, * sys.argv) 
         # Если игры все же нет в базе
         else:
+            # Ожидание ентер
             print(Fore.RED +"Игра не найдена,чтобы вернуться назад нажмите ENTER!")
             input("")
+            # Рестарт скрипта
             python = sys.executable
             execl(python, python, * sys.argv) 
